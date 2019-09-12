@@ -17,8 +17,6 @@ public class DoomMain {
     private final String USER_AGENT = "Mozilla/5.0";
     private final String BASE_URL = "http://localhost:6666/api/";
 
-    private ArrayList<Door> passedDoors;
-
     public static void main(String[] args) throws Exception {
         DoomMain doomMain = new DoomMain();
 
@@ -52,6 +50,19 @@ public class DoomMain {
         } catch (NoDoorsLeftException ex) {
             System.out.println("Out of doors, I'd better go find that button");
         }
+
+        // getAllDoors()
+
+        // getClosestDoor()
+
+        // doTrial()
+            // moveForward()
+            // getDistanceToClosestDoor()
+            // moveBack()
+            // rotate(45degrees)
+
+
+
     }
 
     private Player getPlayer() throws Exception {
@@ -63,19 +74,17 @@ public class DoomMain {
         return player;
     }
 
-    private Door getDoor(int id) throws Exception {
+    private Door getDoor(int id) throws IOException {
         URL obj = new URL(BASE_URL + "world/doors/" + id);
         StringBuffer response = getResponse(obj);
 
-        Gson gson = new Gson();
-        Door door = gson.fromJson(response.toString(), Door.class);
-        return door;
+        return new Gson().fromJson(response.toString(), Door.class);
     }
 
-    private Door getClosestDoor(List<Door> doors) throws NoDoorsLeftException {
-        return doors.stream()
+    private Door getClosestDoor(List<Door> doors) throws IOException, NoDoorsLeftException {
+        return getDoor(doors.stream()
                 .min(Comparator.comparing(Door::getDistance))
-                .orElseThrow(NoDoorsLeftException::new);
+                .orElseThrow(NoDoorsLeftException::new).getId());
     }
 
     private List<Door> getDoors() throws IOException {
