@@ -18,39 +18,38 @@ public class DoomMain {
     private final String USER_AGENT = "Mozilla/5.0";
     private final String BASE_URL = "http://localhost:6666/api/";
     private final Point startingPoint = new Point(1056, -3616, 0, 90);
-    private final Point firstDoor = new Point(1519.973389, -2499.136963, 0, 358);
-    private final Point secondDoor = new Point(3004.020020, -3999.973877, -24, 270);
-    private final Point thirdDoor = new Point(3011.724121, -4615.993164, -24, 267);
-    private final Point finalButton = new Point(2928.022461, -4767.843262, -24, 175);
+
 
     public static void main(String[] args) throws Exception {
         DoomMain doomMain = new DoomMain();
+
+        ArrayList<Point> points = new ArrayList<>();
+
+        final Point firstDoor = new Point(1519.973389, -2499.136963, 0, 358);
+        final Point secondDoor = new Point(3004.020020, -3999.973877, -24, 270);
+        final Point thirdDoor = new Point(3011.724121, -4615.993164, -24, 267);
+        final Point finalButton = new Point(2928.022461, -4767.843262, -24, 175);
+
+        points.add(firstDoor);
+        points.add(secondDoor);
+        points.add(thirdDoor);
+        points.add(finalButton);
+
 
         Player player = doomMain.getPlayer();
         System.out.println("ID: " + player.getId());
         System.out.println("Health: " + player.getHealth());
 
-        // Get all doors for a level
-        List<Door> doors = doomMain.getDoors();
-        System.out.println(doors.toString());
-
-        Door door = doomMain.getDoor(151);// First door in the level
-        System.out.println("ID: " + door.getId());
-        System.out.println("State: " + door.getState());
-
-        doomMain.postAction(Actions.SHOOT.action);
-        doomMain.postAction(Actions.LEFT.action);
-        doomMain.postAction(Actions.FORWARD.action);
-        doomMain.postAction(Actions.FORWARD.action);
-        doomMain.postAction(Actions.FORWARD.action);
-        doomMain.postAction(Actions.RIGHT.action);
-        doomMain.postAction(Actions.FORWARD.action);
-        doomMain.postAction(Actions.FORWARD.action);
-
         try{
-            Door closestDoor = doomMain.getClosestDoor(doors);
-            System.out.println("ID: " + closestDoor.getId());
-            System.out.println("State: " + closestDoor.getState());
+//            Door closestDoor = doomMain.getClosestDoor(doors);
+//            System.out.println("ID: " + closestDoor.getId());
+//            System.out.println("State: " + closestDoor.getState());
+            for (Point currentPoint : points) {
+                while (playerDistanceToPointGreaterThanMin(player, currentPoint)) {
+                    updatePlayerAngle(player, currentPoint, doomMain);
+                    doomMain.postAction(Actions.FORWARD.action);
+                }
+            }
 
 
         } catch (NoDoorsLeftException ex) {
@@ -99,6 +98,19 @@ public class DoomMain {
 
         Type doorListType = new TypeToken<ArrayList<Door>>(){}.getType();
         return new Gson().fromJson(response.toString(), doorListType);
+    }
+
+    private static boolean playerDistanceToPointGreaterThanMin(Player player, Point point) {
+        return true;
+    }
+
+    private static void updatePlayerAngle(Player player, Point point, DoomMain doomMain) throws Exception {
+        Long relativeAngle = Math.round((point.y - player.getPosition().get("y")) / point.x - (player.getPosition().get("x")));
+
+        while(relativeAngle > 12) {
+            doomMain.postAction(Actions.RIGHT.action);
+            relativeAngle = Math.round((point.y - player.getPosition().get("y")) / point.x - (player.getPosition().get("x")));
+        }
     }
 
     private String postAction(String action) throws Exception {
