@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,6 +17,11 @@ public class DoomMain {
 
     private final String USER_AGENT = "Mozilla/5.0";
     private final String BASE_URL = "http://localhost:6666/api/";
+    private final Point startingPoint = new Point(1056, -3616, 0, 90);
+    private final Point firstDoor = new Point(1519.973389, -2499.136963, 0, 358);
+    private final Point secondDoor = new Point(3004.020020, -3999.973877, -24, 270);
+    private final Point thirdDoor = new Point(3011.724121, -4615.993164, -24, 267);
+    private final Point finalButton = new Point(2928.022461, -4767.843262, -24, 175);
 
     public static void main(String[] args) throws Exception {
         DoomMain doomMain = new DoomMain();
