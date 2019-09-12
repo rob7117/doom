@@ -74,7 +74,6 @@ public class DoomMain {
 
     private Door getClosestDoor(List<Door> doors) throws NoDoorsLeftException {
         return doors.stream()
-                .filter(door -> !passedDoors.contains(door))
                 .min(Comparator.comparing(Door::getDistance))
                 .orElseThrow(NoDoorsLeftException::new);
     }
