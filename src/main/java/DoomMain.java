@@ -44,7 +44,7 @@ public class DoomMain {
         doomMain.postAction(Actions.FORWARD.action);
 
         try{
-            Door closestDoor = doomMain.getClosestDoor();
+            Door closestDoor = doomMain.getClosestDoor(doors);
             System.out.println("ID: " + closestDoor.getId());
             System.out.println("State: " + closestDoor.getState());
 
@@ -72,7 +72,7 @@ public class DoomMain {
         return door;
     }
 
-    private Door getClosestDoor(List<Door> doors) throws IOException, NoDoorsLeftException {
+    private Door getClosestDoor(List<Door> doors) throws NoDoorsLeftException {
         return doors.stream()
                 .filter(door -> !passedDoors.contains(door))
                 .min(Comparator.comparing(Door::getDistance))
