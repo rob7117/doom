@@ -1,16 +1,23 @@
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class DoomMain {
 
     private final String USER_AGENT = "Mozilla/5.0";
     private final String BASE_URL = "http://localhost:6666/api/";
+
+    private ArrayList<Door> passedDoors;
 
     public static void main(String[] args) throws Exception {
         DoomMain doomMain = new DoomMain();
@@ -30,6 +37,14 @@ public class DoomMain {
         doomMain.postAction(Actions.FORWARD.action);
         doomMain.postAction(Actions.RIGHT.action);
         doomMain.postAction(Actions.FORWARD.action);
+
+        try{
+            Door closestDoor = doomMain.getClosestDoor();
+            System.out.println("ID: " + closestDoor.getId());
+            System.out.println("State: " + closestDoor.getState());
+        } catch (NoDoorsLeftException ex) {
+            System.out.println("Out of doors, I'd better go find that button");
+        }
     }
 
     private Player getPlayer() throws Exception {
@@ -48,6 +63,23 @@ public class DoomMain {
         Gson gson = new Gson();
         Door door = gson.fromJson(response.toString(), Door.class);
         return door;
+    }
+
+    private Door getClosestDoor() throws IOException, NoDoorsLeftException {
+        List<Door> doorList = getAllDoors();
+
+        return doorList.stream()
+                .filter(door -> !passedDoors.contains(door))
+                .min(Comparator.comparing(Door::getDistance))
+                .orElseThrow(NoDoorsLeftException::new);
+    }
+
+    private List<Door> getAllDoors() throws IOException {
+        URL obj = new URL(BASE_URL + "world/doors");
+        StringBuffer response = getResponse(obj);
+
+        Type doorListType = new TypeToken<ArrayList<Door>>(){}.getType();
+        return new Gson().fromJson(response.toString(), doorListType);
     }
 
     private String postAction(String action) throws Exception {
@@ -91,5 +123,11 @@ public class DoomMain {
         in.close();
 
         return response;
+    }
+
+    private class NoDoorsLeftException extends Exception {
+        NoDoorsLeftException() {
+            super();
+        }
     }
 }
