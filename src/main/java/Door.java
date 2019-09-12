@@ -3,12 +3,14 @@ public class Door {
     private int specialType;
     private String state;
     private String keyRequired;
+    private double distance;
 
-    public Door(int id, int specialType, String state, String keyRequired) {
+    public Door(int id, int specialType, String state, String keyRequired, double distance) {
         this.id = id;
         this.specialType = specialType;
         this.state = state;
         this.keyRequired = keyRequired;
+        this.distance = distance;
     }
 
     public int getId() {
@@ -41,5 +43,13 @@ public class Door {
 
     public void setKeyRequired(String keyRequired) {
         this.keyRequired = keyRequired;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }
