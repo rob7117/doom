@@ -4,7 +4,9 @@ public enum Actions {
     BACKWARD("backward"),
     LEFT("turn-left"),
     RIGHT("turn-right"),
-    USE("use");
+    USE("use"),
+    STRAFE_RIGHT("strafe-right"),
+    STRAFE_LEFT("strafe-left");
 
     public final String action;
 
