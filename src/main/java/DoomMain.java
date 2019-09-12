@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -18,28 +19,35 @@ public class DoomMain {
         System.out.println("ID: " + player.getId());
         System.out.println("Health: " + player.getHealth());
 
-        System.out.println(doomMain.postAction(Actions.SHOOT.action));
+        Door door = doomMain.getDoor(151);// First door in the level
+        System.out.println("ID: " + door.getId());
+        System.out.println("State: " + door.getState());
+
+        doomMain.postAction(Actions.SHOOT.action);
+        doomMain.postAction(Actions.LEFT.action);
+        doomMain.postAction(Actions.FORWARD.action);
+        doomMain.postAction(Actions.FORWARD.action);
+        doomMain.postAction(Actions.FORWARD.action);
+        doomMain.postAction(Actions.RIGHT.action);
+        doomMain.postAction(Actions.FORWARD.action);
     }
 
     private Player getPlayer() throws Exception {
         URL obj = new URL(BASE_URL + "player");
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("User-Agent", USER_AGENT);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
+        StringBuffer response = getResponse(obj);
 
         Gson gson = new Gson();
         Player player = gson.fromJson(response.toString(), Player.class);
         return player;
+    }
+
+    private Door getDoor(int id) throws Exception {
+        URL obj = new URL(BASE_URL + "world/doors/" + id);
+        StringBuffer response = getResponse(obj);
+
+        Gson gson = new Gson();
+        Door door = gson.fromJson(response.toString(), Door.class);
+        return door;
     }
 
     private String postAction(String action) throws Exception {
@@ -67,4 +75,21 @@ public class DoomMain {
         return response.toString();
     }
 
+    private StringBuffer getResponse(URL obj) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("User-Agent", USER_AGENT);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        return response;
+    }
 }
