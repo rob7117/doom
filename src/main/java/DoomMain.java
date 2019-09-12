@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class DoomMain {
 
@@ -19,6 +20,10 @@ public class DoomMain {
         System.out.println("ID: " + player.getId());
         System.out.println("Health: " + player.getHealth());
 
+        // Get all doors for a level
+        ArrayList<Door> doors = doomMain.getDoors();
+        System.out.println(doors.toString());
+
         Door door = doomMain.getDoor(151);// First door in the level
         System.out.println("ID: " + door.getId());
         System.out.println("State: " + door.getState());
@@ -29,6 +34,7 @@ public class DoomMain {
         doomMain.postAction(Actions.FORWARD.action);
         doomMain.postAction(Actions.FORWARD.action);
         doomMain.postAction(Actions.RIGHT.action);
+        doomMain.postAction(Actions.FORWARD.action);
         doomMain.postAction(Actions.FORWARD.action);
     }
 
@@ -48,6 +54,15 @@ public class DoomMain {
         Gson gson = new Gson();
         Door door = gson.fromJson(response.toString(), Door.class);
         return door;
+    }
+
+    private ArrayList<Door> getDoors() throws Exception {
+        URL obj = new URL(BASE_URL + "world/doors");
+        StringBuffer response = getResponse(obj);
+
+        Gson gson = new Gson();
+        ArrayList<Door> doors = gson.fromJson(response.toString(), ArrayList.class);
+        return doors;
     }
 
     private String postAction(String action) throws Exception {
