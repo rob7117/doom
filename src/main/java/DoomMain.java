@@ -18,7 +18,7 @@ public class DoomMain {
         System.out.println("ID: " + player.getId());
         System.out.println("Health: " + player.getHealth());
 
-        System.out.println(doomMain.postAction("shoot"));
+        System.out.println(doomMain.postAction(Actions.SHOOT.action));
     }
 
     private Player getPlayer() throws Exception {
